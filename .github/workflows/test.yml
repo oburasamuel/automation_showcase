@@ -1,0 +1,120 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  api-tests:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: api/package-lock.json
+    
+    - name: Install API dependencies
+      run: |
+        cd api
+        npm ci
+    
+    - name: Run API tests with coverage
+      run: |
+        cd api
+        npm run test -- --coverage --watchAll=false
+    
+    - name: Upload API coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        directory: ./api/coverage
+        flags: api-tests
+        name: api-coverage
+
+  ui-tests:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: |
+          api/package-lock.json
+          client/package-lock.json
+          tests/ui/package-lock.json
+    
+    - name: Install dependencies
+      run: |
+        cd api && npm ci
+        cd ../client && npm ci
+        cd ../tests/ui && npm ci
+    
+    - name: Install Playwright browsers
+      run: |
+        cd tests/ui
+        npx playwright install --with-deps
+    
+    - name: Build client
+      run: |
+        cd client
+        npm run build
+    
+    - name: Run Playwright tests
+      run: |
+        cd tests/ui
+        npx playwright test
+    
+    - name: Upload Playwright report
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: playwright-report
+        path: tests/ui/playwright-report/
+        retention-days: 30
+
+  integration-tests:
+    runs-on: ubuntu-latest
+    needs: [api-tests, ui-tests]
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+    
+    - name: Install all dependencies
+      run: |
+        cd api && npm ci
+        cd ../client && npm ci
+        cd ../tests/ui && npm ci
+    
+    - name: Start services and run integration tests
+      run: |
+        # Start API server in background
+        cd api && npm start &
+        API_PID=$!
+        
+        # Start client in background
+        cd client && npm start &
+        CLIENT_PID=$!
+        
+        # Wait for services to be ready
+        sleep 30
+        
+        # Run integration tests
+        cd tests/ui && npx playwright test --project=chromium
+        
+        # Cleanup
+        kill $API_PID $CLIENT_PID

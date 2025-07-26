@@ -1,0 +1,24 @@
+{
+  "name": "automation_showcase",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start:client": "npm --prefix client start",
+    "start:server": "npm --prefix server start",
+    "dev": "concurrently \"npm run start:server\" \"npm run start:client\"",
+    "test": "playwright test",
+    "test:e2e": "start-server-and-test dev http://localhost:3000 test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@playwright/test": "^1.54.1",
+    "@types/node": "^24.1.0",
+    "start-server-and-test": "^2.0.12"
+  },
+  "dependencies": {
+    "supertest": "^7.1.4"
+  }
+}

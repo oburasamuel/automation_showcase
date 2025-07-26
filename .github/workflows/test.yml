@@ -23,7 +23,7 @@ jobs:
     - name: Install API dependencies
       run: |
         cd api
-        npm ci
+        npm install
     
     - name: Run API tests with coverage
       run: |
@@ -56,9 +56,9 @@ jobs:
     
     - name: Install dependencies
       run: |
-        cd api && npm ci
-        cd ../client && npm ci
-        cd ../tests/ui && npm ci
+        cd api && npm install
+        cd ../client && npm install
+        cd ../tests/ui && npm install
     
     - name: Install Playwright browsers
       run: |
@@ -97,9 +97,9 @@ jobs:
     
     - name: Install all dependencies
       run: |
-        cd api && npm ci
-        cd ../client && npm ci
-        cd ../tests/ui && npm ci
+        cd api && npm install
+        cd ../client && npm install
+        cd ../tests/ui && npm install
     
     - name: Start services and run integration tests
       run: |

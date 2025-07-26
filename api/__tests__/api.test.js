@@ -1,5 +1,4 @@
 const request = require('supertest');
-const { test, expect, describe, beforeAll } = require('@playwright/test');
 const { app } = require('../../api/server');
 
 describe('Notes API', () => {

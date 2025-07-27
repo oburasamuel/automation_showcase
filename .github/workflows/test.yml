@@ -59,22 +59,26 @@ jobs:
         cd api && npm install
         cd client && npm install
         cd tests/ui && npm install
+        working-directory: automation_showcase
     
     - name: Install Playwright browsers
       run: |
         cd tests/ui
         npx playwright install --with-deps
+        working-directory: automation_showcase
     
     - name: Build client
       run: |
         cd client
         npm run build
+        working-directory: automation_showcase
     
     - name: Run Playwright tests
       run: |
         cd tests/ui
         npm run test:e2e -- --project=chromium
         npx playwright test
+        working-directory: automation_showcase
     
     - name: Upload Playwright report
       uses: actions/upload-artifact@v4
@@ -101,6 +105,7 @@ jobs:
         cd api && npm install
         cd client && npm install
         cd tests/ui && npm install
+        working-directory: automation_showcase
     
     - name: Start services and run integration tests
       run: |

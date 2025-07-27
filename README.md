@@ -11,7 +11,7 @@ A comprehensive automation testing showcase featuring a React frontend, Node.js 
 ### Installation & Setup
 ```bash
 # Clone the repository
-git clone <repository-url>
+git clone <git@github.com:oburasamuel/automation_showcase.git>
 cd automation-showcase
 
 # Install all dependencies

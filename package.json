@@ -17,6 +17,7 @@
   "devDependencies": {
     "@playwright/test": "^1.54.1",
     "@types/node": "^24.1.0",
+    "@types/supertest": "^6.0.3",
     "concurrently": "^9.2.0",
     "start-server-and-test": "^2.0.12"
   },

@@ -185,6 +185,8 @@ test.describe('Notes App', () => {
         const noteId = await firstNote.getAttribute('data-testid');
         const id = noteId.replace('note-', '');
         await page.click(`[data-testid="delete-note-${id}"]`);
+        // Wait for the note to be removed from the DOM before continuing
+        await expect(page.locator(`[data-testid="note-${id}"]`)).not.toBeVisible();
       }
       
       // Verify empty state
@@ -240,7 +242,22 @@ test.describe('Notes App', () => {
       await page.fill('[data-testid="password-input"]', 'password');
       await page.click('[data-testid="login-button"]');
       await expect(page.locator('[data-testid="notes-list"]')).toBeVisible();
-      
+
+      // Delete all existing notes to ensure a clean state
+      const noteItems = page.locator('.note-item');
+      const count = await noteItems.count();
+      for (let i = 0; i < count; i++) {
+        const firstNote = page.locator('.note-item').first();
+        const noteId = await firstNote.getAttribute('data-testid');
+        const id = noteId.replace('note-', '');
+        await page.click(`[data-testid="delete-note-${id}"]`);
+        // Wait for the note to be removed before continuing
+        await expect(page.locator(`[data-testid="note-${id}"]`)).not.toBeVisible();
+      }
+      // Wait for empty state to appear
+      await expect(page.locator('[data-testid="no-notes"]')).toBeVisible();
+      await expect(page.locator('[data-testid="notes-count"]')).toContainText('Total notes: 0');
+
       await expect(page).toHaveScreenshot('notes-page.png');
     });
   });

@@ -31,15 +31,13 @@ module.exports = defineConfig({
   ],
   webServer: [
     {
-      command: 'npm start',
+      command: 'npm start --prefix ../../api',
       port: 5000,
-      cwd: path.resolve(__dirname, '../../api'),
       reuseExistingServer: !process.env.CI,
     },
     {
       command: 'npm run dev --prefix ../../client',
       port: 3000,
-      cwd: path.resolve(__dirname, '../../client'),
       reuseExistingServer: !process.env.CI,
     },
   ],

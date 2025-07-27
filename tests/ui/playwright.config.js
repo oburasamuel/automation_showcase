@@ -37,7 +37,7 @@ module.exports = defineConfig({
       reuseExistingServer: !process.env.CI,
     },
     {
-      command: 'npm start',
+      command: 'npm run dev --prefix ../../client',
       port: 3000,
       reuseExistingServer: !process.env.CI,
     },

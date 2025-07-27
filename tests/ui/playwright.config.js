@@ -39,6 +39,7 @@ module.exports = defineConfig({
     {
       command: 'npm run dev --prefix ../../client',
       port: 3000,
+      cwd: path.resolve(__dirname, '../../client'),
       reuseExistingServer: !process.env.CI,
     },
   ],

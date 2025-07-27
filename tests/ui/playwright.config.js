@@ -31,8 +31,9 @@ module.exports = defineConfig({
   ],
   webServer: [
     {
-      command: 'cd ../api && npm start',
+      command: 'npm start',
       port: 5000,
+      cwd: path.resolve(__dirname, '../../api'),
       reuseExistingServer: !process.env.CI,
     },
     {

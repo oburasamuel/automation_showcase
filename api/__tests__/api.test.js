@@ -1,13 +1,30 @@
 const request = require('supertest');
 const { app } = require('../../api/server');
 
+let server;
+
+beforeAll((done) => {
+  server = app.listen(4000, () => {
+    console.log('Test server running on port 4000');
+    done();
+  });
+});
+
+afterAll((done) => {
+  server.close(() => {
+    console.log('Test server closed');
+    done();
+  });
+});
+
+
 describe('Notes API', () => {
   let authToken;
   let createdNoteId;
 
   beforeAll(async () => {
     // Login to get auth token
-    const loginResponse = await request(app)
+    const loginResponse = await request(server)
       .post('/api/login')
       .send({ username: 'admin', password: 'password' });
     
@@ -16,7 +33,7 @@ describe('Notes API', () => {
 
   describe('POST /api/login', () => {
     test('should login with valid credentials', async () => {
-      const response = await request(app)
+      const response = await request(server)
         .post('/api/login')
         .send({ username: 'admin', password: 'password' });
 
@@ -27,7 +44,7 @@ describe('Notes API', () => {
     });
 
     test('should reject invalid credentials', async () => {
-      const response = await request(app)
+      const response = await request(server)
         .post('/api/login')
         .send({ username: 'admin', password: 'wrongpassword' });
 
@@ -36,7 +53,7 @@ describe('Notes API', () => {
     });
 
     test('should require username and password', async () => {
-      const response = await request(app)
+      const response = await request(server)
         .post('/api/login')
         .send({ username: 'admin' });
 
@@ -47,7 +64,7 @@ describe('Notes API', () => {
 
   describe('GET /api/items', () => {
     test('should return notes array for authenticated user', async () => {
-      const response = await request(app)
+      const response = await request(server)
         .get('/api/items')
         .set('Authorization', `Bearer ${authToken}`);
 
@@ -57,7 +74,7 @@ describe('Notes API', () => {
     });
 
     test('should reject request without auth token', async () => {
-      const response = await request(app)
+      const response = await request(server)
         .get('/api/items');
 
       expect(response.status).toBe(401);
@@ -65,7 +82,7 @@ describe('Notes API', () => {
     });
 
     test('should reject request with invalid token', async () => {
-      const response = await request(app)
+      const response = await request(server)
         .get('/api/items')
         .set('Authorization', 'Bearer invalid-token');
 
@@ -78,7 +95,7 @@ describe('Notes API', () => {
     test('should create new note with valid data', async () => {
       const noteData = { content: 'Test note content' };
       
-      const response = await request(app)
+      const response = await request(server)
         .post('/api/items')
         .set('Authorization', `Bearer ${authToken}`)
         .send(noteData);
@@ -92,7 +109,7 @@ describe('Notes API', () => {
     });
 
     test('should reject note with empty content', async () => {
-      const response = await request(app)
+      const response = await request(server)
         .post('/api/items')
         .set('Authorization', `Bearer ${authToken}`)
         .send({ content: '' });
@@ -102,7 +119,7 @@ describe('Notes API', () => {
     });
 
     test('should reject note without content field', async () => {
-      const response = await request(app)
+      const response = await request(server)
         .post('/api/items')
         .set('Authorization', `Bearer ${authToken}`)
         .send({});
@@ -112,7 +129,7 @@ describe('Notes API', () => {
     });
 
     test('should require authentication', async () => {
-      const response = await request(app)
+      const response = await request(server)
         .post('/api/items')
         .send({ content: 'Test note' });
 
@@ -124,7 +141,7 @@ describe('Notes API', () => {
     test('should update existing note', async () => {
       const updatedContent = 'Updated test note content';
       
-      const response = await request(app)
+      const response = await request(server)
         .put(`/api/items/${createdNoteId}`)
         .set('Authorization', `Bearer ${authToken}`)
         .send({ content: updatedContent });
@@ -136,7 +153,7 @@ describe('Notes API', () => {
     });
 
     test('should return 404 for non-existent note', async () => {
-      const response = await request(app)
+      const response = await request(server)
         .put('/api/items/99999')
         .set('Authorization', `Bearer ${authToken}`)
         .send({ content: 'Updated content' });
@@ -146,7 +163,7 @@ describe('Notes API', () => {
     });
 
     test('should reject update with empty content', async () => {
-      const response = await request(app)
+      const response = await request(server)
         .put(`/api/items/${createdNoteId}`)
         .set('Authorization', `Bearer ${authToken}`)
         .send({ content: '' });
@@ -158,7 +175,7 @@ describe('Notes API', () => {
 
   describe('DELETE /api/items/:id', () => {
     test('should delete existing note', async () => {
-      const response = await request(app)
+      const response = await request(server)
         .delete(`/api/items/${createdNoteId}`)
         .set('Authorization', `Bearer ${authToken}`);
 
@@ -166,7 +183,7 @@ describe('Notes API', () => {
     });
 
     test('should return 404 for non-existent note', async () => {
-      const response = await request(app)
+      const response = await request(server)
         .delete('/api/items/99999')
         .set('Authorization', `Bearer ${authToken}`);
 
@@ -175,7 +192,7 @@ describe('Notes API', () => {
     });
 
     test('should require authentication', async () => {
-      const response = await request(app)
+      const response = await request(server)
         .delete('/api/items/1');
 
       expect(response.status).toBe(401);
@@ -184,7 +201,7 @@ describe('Notes API', () => {
 
   describe('Health Check', () => {
     test('should return health status', async () => {
-      const response = await request(app)
+      const response = await request(server)
         .get('/api/health');
 
       expect(response.status).toBe(200);

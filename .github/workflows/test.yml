@@ -73,6 +73,7 @@ jobs:
     - name: Run Playwright tests
       run: |
         cd tests/ui
+        npm run test:e2e -- --project=chromium
         npx playwright test
     
     - name: Upload Playwright report

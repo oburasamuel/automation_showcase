@@ -23,7 +23,7 @@ jobs:
     - name: Install API dependencies
       run: |
         cd api
-        npm install
+        npm ci
     
     - name: Run API tests with coverage
       run: |
@@ -31,8 +31,7 @@ jobs:
         npm run test -- --coverage --watchAll=false
     
     - name: Upload API coverage to Codecov
-      uses: codecov/codecov-action@v4
-
+      uses: codecov/codecov-action@v3
       with:
         directory: ./api/coverage
         flags: api-tests
@@ -56,32 +55,27 @@ jobs:
     
     - name: Install dependencies
       run: |
-        cd api && npm install
-        cd client && npm install
-        cd tests/ui && npm install
-        working-directory: automation_showcase
+        cd api && npm ci
+        cd ../client && npm ci
+        cd ../tests/ui && npm ci
     
     - name: Install Playwright browsers
       run: |
         cd tests/ui
         npx playwright install --with-deps
-        working-directory: automation_showcase
     
     - name: Build client
       run: |
         cd client
         npm run build
-        working-directory: automation_showcase
     
     - name: Run Playwright tests
       run: |
         cd tests/ui
-        npm run test:e2e -- --project=chromium
         npx playwright test
-        working-directory: automation_showcase
     
     - name: Upload Playwright report
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v3
       if: always()
       with:
         name: playwright-report
@@ -102,10 +96,9 @@ jobs:
     
     - name: Install all dependencies
       run: |
-        cd api && npm install
-        cd client && npm install
-        cd tests/ui && npm install
-        working-directory: automation_showcase
+        cd api && npm ci
+        cd ../client && npm ci
+        cd ../tests/ui && npm ci
     
     - name: Start services and run integration tests
       run: |

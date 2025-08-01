@@ -1,6 +1,6 @@
 # Automation Showcase - Full Stack Testing 
 
-A comprehensive automation testing showcase featuring a React frontend, Node.js backend, and complete test coverage with both UI and API automated tests.
+A Full comprehensive automation testing showcase featuring a React frontend, Node.js backend, and complete test coverage with both UI and API automated tests.
 
 ## 🚀 Quick Start
 
